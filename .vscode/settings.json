@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "random": "cpp",
+        "cstddef": "cpp",
+        "array": "cpp",
+        "vector": "cpp",
+        "xstring": "cpp",
+        "xutility": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "functional": "cpp",
+        "optional": "cpp",
+        "system_error": "cpp",
+        "xtr1common": "cpp",
+        "ratio": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp"
+    }
+}
