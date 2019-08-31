@@ -1,48 +1,29 @@
-#include <timer.h>
+#include <SimplexNoise.h>
+SimplexNoise sn;
+
 auto timer = timer_create_default();
 
-LEDPanel ledPanel(32, 33, 25, 26);
+TouchPanel touchPanel;
+
+unsigned long currentTime = millis();
+unsigned long lastTime = millis();
 
 
 void setup() {
   Serial.begin(9600);
-  timer.every(10, matrixTestChange);
+  touchPanel.init();
+  timer.every(500, matrixTestChange);
+  ledPanel.setPixel(4, 4, 255);
 }
+
 
 bool matrixTestChange(void *){
 
-    static bool iteration = false;
-    static int i = 0;
     
-
-    if(!iteration){
-      i++;
-      if(i > 155){
-        iteration = true;
-      }
-    } else {
-      i--;
-      if(i < 1){
-        iteration = false;
-      }
-    }
-
-
-    byte newInput[9][9] ={{i,0,0,0,i,i,i,i,i},
-                          {i,0,0,0,i,0,0,0,0},
-                          {i,0,0,0,i,0,0,0,0},
-                          {i,0,0,0,i,0,0,0,0},
-                          {i,i,i,i,i,i,i,i,i},
-                          {0,0,0,0,i,0,0,0,i},
-                          {0,0,0,0,i,0,0,0,i},
-                          {0,0,0,0,i,0,0,0,i},
-                          {i,i,i,i,i,0,0,0,i}};
-    
-    for(int j = 0; j < 9; j++){
-        for(int k = 0; k < 9; k++){
-          ledPanel.data[j][k] = newInput[j][k];
-        }
-    }
+    ledPanel.fadeTo(floor(random(9)), floor(random(9)), floor(random(128, 255)), floor(random(192, 255)));
+    ledPanel.fadeTo(floor(random(9)), floor(random(9)), 0, floor(random(128, 255)));
+    ledPanel.fadeTo(floor(random(9)), floor(random(9)), 0, floor(random(128, 255)));
+    ledPanel.fadeTo(floor(random(9)), floor(random(9)), 0, floor(random(128, 255)));
 
     return true;
 }
@@ -51,7 +32,15 @@ bool matrixTestChange(void *){
 
 
 void loop() {
-
   ledPanel.update();
   timer.tick();
+
+  currentTime = millis();
+  if (currentTime - lastTime >= 15)
+  {
+      touchPanel.update();
+      lastTime = currentTime;
+  }
+
+
 }
