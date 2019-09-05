@@ -10,7 +10,7 @@ unsigned long lastTime = millis();
 
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   touchPanel.init();
   timer.every(500, matrixTestChange);
   ledPanel.setPixel(4, 4, 255);
@@ -36,7 +36,7 @@ void loop() {
   timer.tick();
 
   currentTime = millis();
-  if (currentTime - lastTime >= 15)
+  if (currentTime - lastTime >= 80)
   {
       touchPanel.update();
       lastTime = currentTime;
