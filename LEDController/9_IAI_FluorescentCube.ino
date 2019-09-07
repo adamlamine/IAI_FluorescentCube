@@ -37,7 +37,6 @@ void loop() {
   currentTime = millis();
   if (currentTime - lastTime >= 80)
   {
-      touchPanel.update();
       lastTime = currentTime;
   }
 

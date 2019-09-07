@@ -1,9 +1,14 @@
+#include <Adafruit_MPR121.h>
+
+
 struct TouchPanel{
 
     public:
         TouchPanel();
         void update();
         void init();
+        uint16_t getRows();
+        uint16_t getColumns();
 
 
     private:
@@ -38,6 +43,24 @@ void TouchPanel::init(){
     
 }
 
+uint16_t TouchPanel::getRows(){
+        delay(20);
+        this->currtouched1 = this->cap1.getTouches();
+        cap1.writeRegister(MPR121_ECR, 0x00); //CAP1 OFF
+        cap2.writeRegister(MPR121_ECR, 0x8F); //CAP2 ON
+    
+        return(this->currtouched1);
+}
+
+uint16_t TouchPanel::getColumns(){
+        delay(20);
+        this->currtouched2 = this->cap2.getTouches();
+        cap2.writeRegister(MPR121_ECR, 0x00); //CAP1 OFF
+        cap1.writeRegister(MPR121_ECR, 0x8F); //CAP2 ON
+    
+        return(this->currtouched2);
+}
+
 void TouchPanel::update() {
 
     if(lastEven){
@@ -45,47 +68,27 @@ void TouchPanel::update() {
         cap1.writeRegister(MPR121_ECR, 0x00); //CAP1 OFF
         cap2.writeRegister(MPR121_ECR, 0x8F); //CAP2 ON
     
-        // Serial.print("A: ");
-        // for (int i = 8; i >= 0; i--)
-        // {
-        //     bool b = bitRead(currtouched1, i);
-        //     Serial.print(b);
-        //     Serial.print(" ");
-        // }
-        // Serial.println();
+        Serial.print("A: ");
+        for (int i = 8; i >= 0; i--)
+        {
+            bool b = bitRead(currtouched1, i);
+            Serial.print(b);
+            Serial.print(" ");
+        }
+        Serial.println();
     } else {
         this->currtouched2 = this->cap2.getTouches();
         cap2.writeRegister(MPR121_ECR, 0x00); //CAP1 OFF
         cap1.writeRegister(MPR121_ECR, 0x8F); //CAP2 ON
     
-        // Serial.print("B: ");
-        // for (int i = 11; i >= 3; i--)
-        // {
-        //     bool b = bitRead(currtouched2, i);
-        //     Serial.print(b);
-        //     Serial.print(" ");
-        // }
-        // Serial.println();
-    }
-
-    ledPanel.clear();
-    for (int a = 8; a >= 0; a--)
-    {
-        for (int b = 11; b >= 3; b--)
+        Serial.print("B: ");
+        for (int i = 11; i >= 3; i--)
         {
-            if(bitRead(currtouched1, a) && bitRead(currtouched2, b)){
-                byte x = a;
-                byte y = 8-(b-3);
-                
-                // if(ledPanel.getPixel(x,y) >=250){
-                //     ledPanel.fadeTo(x, y, 0, 220);
-                // } else {
-                //     ledPanel.fadeTo(x, y, 255, 200);
-                // }
-                ledPanel.setPixel(x,y,128);
-                // ledPanel.clearFades();
-            }
+            bool b = bitRead(currtouched2, i);
+            Serial.print(b);
+            Serial.print(" ");
         }
+        Serial.println();
     }
 
 
