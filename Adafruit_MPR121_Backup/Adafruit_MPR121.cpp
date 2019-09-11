@@ -294,19 +294,22 @@ uint16_t Adafruit_MPR121::getTouches(void){
   uint16_t touches = 0b0000000000000000;
   uint16_t numTouches = 0;
   for(uint16_t i = 0; i < 12; i++){
-    if(filteredData(i) < currentBaseline[i] - triggerThreshold){
+    uint16_t data = filteredData(i);
+    if(data < currentBaseline[i] - triggerThreshold){ //Touch detected
       bitWrite(touches, i, 1);
       calibrationActive = false;
       numTouches++;
+    } else {
+      currentBaseline[i] = data;
     }
     
       // Serial.print("D: "); Serial.print(filteredData(i)); Serial.print(" B: ");
       // Serial.print(currentBaseline[i]); Serial.print(" | ");
   }
-  Serial.println();
+  // Serial.println();
 
   
-  if(calibrationActive || numTouches == 0){
+  if(calibrationActive){ // || numTouches == 0
     calibrate();
   }
   return(touches);

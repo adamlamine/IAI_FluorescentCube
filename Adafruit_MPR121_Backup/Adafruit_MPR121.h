@@ -111,7 +111,7 @@ private:
   int8_t _i2caddr;
   TwoWire *_wire;
 
-  byte triggerThreshold = 1;
+  byte triggerThreshold = 2;
   byte updateIteration = 0;
   byte baselineIterations = 16;
   float baseline[16][12];

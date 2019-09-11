@@ -19,6 +19,8 @@ struct TouchPanel{
         uint16_t lasttouched2 = 0;
         uint16_t currtouched2 = 0;
         bool lastEven = true;
+        uint16_t rowtouches = 0b000000000000;
+        uint16_t coltouches = 0b000000000000;
         
 
 };
@@ -28,6 +30,9 @@ TouchPanel::TouchPanel(){
 }
 
 void TouchPanel::init(){
+
+    delay(5000);
+    
     cap1.begin(0x5A);
     delay(500);
     cap1.calibrate();
@@ -37,61 +42,34 @@ void TouchPanel::init(){
     delay(500);
     cap2.calibrate();
     cap2.writeRegister(MPR121_ECR, 0x00);
-
     cap1.writeRegister(MPR121_ECR, 0x8F);
     delay(50);
     
 }
 
 uint16_t TouchPanel::getRows(){
-        delay(20);
-        this->currtouched1 = this->cap1.getTouches();
-        cap1.writeRegister(MPR121_ECR, 0x00); //CAP1 OFF
-        cap2.writeRegister(MPR121_ECR, 0x8F); //CAP2 ON
-    
-        return(this->currtouched1);
+    delay(20);
+    this->currtouched1 = this->cap1.getTouches(false);
+    cap1.writeRegister(MPR121_ECR, 0x00); //CAP1 OFF
+    cap2.writeRegister(MPR121_ECR, 0x8F); //CAP2 ON
+    this->rowtouches = this->currtouched1;
+    return(this->currtouched1);
 }
 
 uint16_t TouchPanel::getColumns(){
-        delay(20);
-        this->currtouched2 = this->cap2.getTouches();
-        cap2.writeRegister(MPR121_ECR, 0x00); //CAP1 OFF
-        cap1.writeRegister(MPR121_ECR, 0x8F); //CAP2 ON
-    
-        return(this->currtouched2);
+    delay(20);
+    this->currtouched2 = this->cap2.getTouches(true);
+    cap2.writeRegister(MPR121_ECR, 0x00); //CAP1 OFF
+    cap1.writeRegister(MPR121_ECR, 0x8F); //CAP2 ON
+    this->coltouches = this->currtouched2;
+    return(this->currtouched2);
 }
 
 void TouchPanel::update() {
-
-    if(lastEven){
-        this->currtouched1 = this->cap1.getTouches();
-        cap1.writeRegister(MPR121_ECR, 0x00); //CAP1 OFF
-        cap2.writeRegister(MPR121_ECR, 0x8F); //CAP2 ON
-    
-        Serial.print("A: ");
-        for (int i = 8; i >= 0; i--)
-        {
-            bool b = bitRead(currtouched1, i);
-            Serial.print(b);
-            Serial.print(" ");
+    for(uint16_t i = 0; i < 12; i++){
+        for(uint16_t j = 0; j < 12; j++){
+            bool x = bitRead(this->rowtouches, i);
+            bool y = bitRead(this->rowtouches, j);
         }
-        Serial.println();
-    } else {
-        this->currtouched2 = this->cap2.getTouches();
-        cap2.writeRegister(MPR121_ECR, 0x00); //CAP1 OFF
-        cap1.writeRegister(MPR121_ECR, 0x8F); //CAP2 ON
-    
-        Serial.print("B: ");
-        for (int i = 11; i >= 3; i--)
-        {
-            bool b = bitRead(currtouched2, i);
-            Serial.print(b);
-            Serial.print(" ");
-        }
-        Serial.println();
     }
-
-
-    lastEven = !lastEven;
-
 }

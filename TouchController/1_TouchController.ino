@@ -1,14 +1,23 @@
 TouchPanel touchPanel;
-uint8_t OUT_PINS[10] = {14,15,16,17,18,19,23,26,27,13};
+uint8_t OUT_PINS[10] = {14,15,16,17,18,19,23,4,27,13};
 
 void setup() {
   Serial.begin(115200);
   touchPanel.init();
+
+
 }
 
 void loop() {
-    sendRows();
-    sendColumns();
+
+
+    sendRows(touchPanel.getRows());
+    sendColumns(touchPanel.getColumns());
+    for(int i = 0; i < 10; i++){
+        pinMode(OUT_PINS[i], OUTPUT);
+    }
+
+    touchPanel.update();
 
     // Serial.print("ROWS: ");
     // for (int i = 8; i >= 0; i--)
@@ -30,8 +39,7 @@ void loop() {
     // Serial.println();
 }
 
-void sendRows(){
-    uint16_t rows_raw = touchPanel.getRows();
+void sendRows(uint16_t rows_raw){
     uint16_t rows_output = 0b000000000;
     for (int i = 8; i >= 0; i--)
     {
@@ -39,16 +47,15 @@ void sendRows(){
         bitWrite(rows_output, i, b);
     }
 
-    digitalWrite(OUT_PINS[9], 1);
     delay(2);
     for (int i = 8; i >= 0; i--)
     {
         digitalWrite(OUT_PINS[i], bitRead(rows_output, i));
     }
+    digitalWrite(OUT_PINS[9], 1);
 }
 
-void sendColumns(){
-    uint16_t columns_raw = touchPanel.getColumns();
+void sendColumns(uint16_t columns_raw){
     uint16_t columns_output = 0b000000000;
     for (int i = 11; i >= 3; i--)
     {
@@ -56,10 +63,10 @@ void sendColumns(){
         bitWrite(columns_output, i-3, b);
     }
 
-    digitalWrite(OUT_PINS[9], 0);
     delay(2);
     for (int i = 8; i >= 0; i--)
     {
         digitalWrite(OUT_PINS[i], bitRead(columns_output, i));
     }
+    digitalWrite(OUT_PINS[9], 0);
 }

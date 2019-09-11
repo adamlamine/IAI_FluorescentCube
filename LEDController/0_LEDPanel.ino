@@ -4,6 +4,8 @@
 #include <Wire.h>
 #include <Adafruit_MPR121.h>
 
+uint8_t IN_PINS[10] = {14,15,16,17,18,19,23,4,27,13};
+
 struct Fade{
     public:
         byte row;
@@ -29,20 +31,20 @@ struct LEDPanel{
         void clear();
         void drawRect(byte startColumn, byte startRow, byte endColumn, byte endRow, byte value);
         QList<Fade> getFadeList();
+        void handleFades();
+        void writeToRegister(unsigned long int pattern);//WIEDER PRIVATE MACHEN
 
     private:
         int dataPin; //GELBES KABEL
         int latchPin; //VIOLETTES KABEL
         int clockPin; //BLAUES KABEL
         int groundPin; //WEISSES KABEL        
-        void writeToRegister(unsigned long int pattern);
+        // void writeToRegister(unsigned long int pattern);
         void writePixel(byte row, byte column); 
-        void writeRow(byte row, unsigned long int data);
-        Timer<10, micros> timer;
+        void writeRow(byte row, uint16_t data);
         unsigned long currentTime = millis();
         unsigned long lastTime = millis();
         QList<Fade> fadeList;
-        void handleFades();
         
         byte data[9][9] =    
         {{0,0,0,0,0,0,0,0,0},
@@ -83,7 +85,7 @@ void LEDPanel::writePixel(byte row, byte column){
     this->writeToRegister(combined);
 }
 
-void LEDPanel::writeRow(byte row, unsigned long int data){
+void LEDPanel::writeRow(byte row, uint16_t data){
     unsigned long int rowBits = data ^ 0b111111111;
     unsigned long int spaltenBits = 0b000000000 ^ 0b000000001 << (8 - row);
     unsigned long int combined = (spaltenBits << 15) + (rowBits << 6);
@@ -94,8 +96,8 @@ void LEDPanel::update(){
     static byte PWM = 0;
 
     for(int j = 0; j < 9; j++){
-        unsigned int rowBits = 0b000000000;
-        for(int k = 0; k < 9; k++){
+        uint16_t rowBits = 0b000000000;
+        for(byte k = 0; k < 9; k++){
             if(this->data[j][k] > PWM){
                 bitWrite(rowBits, k, 1);
             }
@@ -108,9 +110,8 @@ void LEDPanel::update(){
         PWM = 0;
     }
 
-    digitalWrite(this->groundPin, LOW);
-    this->timer.tick();
-    this->handleFades();
+    // digitalWrite(this->groundPin, LOW);
+    // this->handleFades();
 }
 
 void LEDPanel::setPixel(byte row, byte column, byte value){
@@ -153,7 +154,6 @@ void LEDPanel::handleFades(){
         this->currentTime = millis();
         if (this->currentTime - fadeList.at(i).lastTime >= 256-speed)
         {
-            
             fadeList.at(i).lastTime = this->currentTime;
 
             if(this->data[row][column] > value ){

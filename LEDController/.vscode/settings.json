@@ -30,6 +30,7 @@
         "xiosbase": "cpp",
         "xtree": "cpp",
         "initializer_list": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "unordered_set": "cpp"
     }
 }

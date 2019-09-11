@@ -3,9 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
-                "C:\\Users\\AdamLamine\\Documents\\Arduino\\hardware\\espressif\\esp32\\**",
-                "C:\\Program Files (x86)\\Arduino\\tools\\**",
-                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\**"
+                "C:\\Users\\AdamLamine\\Documents\\Arduino\\hardware\\espressif\\esp32\\**"
             ],
             "forcedInclude": [],
             "intelliSenseMode": "msvc-x64",
