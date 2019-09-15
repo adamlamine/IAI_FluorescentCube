@@ -31,15 +31,15 @@ TouchPanel::TouchPanel(){
 
 void TouchPanel::init(){
 
-    delay(5000);
+    delay(4000);
     
     cap1.begin(0x5A);
-    delay(500);
+    delay(3000);
     cap1.calibrate();
     cap1.writeRegister(MPR121_ECR, 0x00);
-    delay(500);
+    delay(3000);
     cap2.begin(0x5C);
-    delay(500);
+    delay(100);
     cap2.calibrate();
     cap2.writeRegister(MPR121_ECR, 0x00);
     cap1.writeRegister(MPR121_ECR, 0x8F);
@@ -49,7 +49,7 @@ void TouchPanel::init(){
 
 uint16_t TouchPanel::getRows(){
     delay(20);
-    this->currtouched1 = this->cap1.getTouches(false);
+    this->currtouched1 = this->cap1.getTouches(true);
     cap1.writeRegister(MPR121_ECR, 0x00); //CAP1 OFF
     cap2.writeRegister(MPR121_ECR, 0x8F); //CAP2 ON
     this->rowtouches = this->currtouched1;
@@ -58,7 +58,7 @@ uint16_t TouchPanel::getRows(){
 
 uint16_t TouchPanel::getColumns(){
     delay(20);
-    this->currtouched2 = this->cap2.getTouches(true);
+    this->currtouched2 = this->cap2.getTouches(false);
     cap2.writeRegister(MPR121_ECR, 0x00); //CAP1 OFF
     cap1.writeRegister(MPR121_ECR, 0x8F); //CAP2 ON
     this->coltouches = this->currtouched2;

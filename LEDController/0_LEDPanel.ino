@@ -12,8 +12,7 @@ struct Fade{
         byte column;
         byte value;
         byte speed;
-        unsigned long currentTime = millis();
-        unsigned long lastTime = millis();
+        unsigned long lastTime = 0;
 };
 
 struct LEDPanel{
@@ -150,11 +149,10 @@ void LEDPanel::handleFades(){
         byte value = currentFade.value;
         byte speed = currentFade.speed;
         
-
         this->currentTime = millis();
-        if (this->currentTime - fadeList.at(i).lastTime >= 256-speed)
+        if (this->currentTime - fadeList.at(i).lastTime >= (256-speed)/2)
         {
-            fadeList.at(i).lastTime = this->currentTime;
+             fadeList.at(i).lastTime = this->currentTime;
 
             if(this->data[row][column] > value ){
                 this->data[row][column]--;

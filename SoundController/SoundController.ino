@@ -38,7 +38,7 @@ void setup() {
   }
   Serial.println("SD found!");
   
-  musicPlayer.setVolume(10,10);
+  musicPlayer.setVolume(2,2);
   musicPlayer.useInterrupt(VS1053_FILEPLAYER_PIN_INT);
 
 
@@ -72,7 +72,10 @@ void listeningEnded(){
 
     if(currentTrack != interruptCounter && interruptCounter != 0){
       musicPlayer.startPlayingFile(filenameC);
-      currentTrack = interruptCounter;
+      Serial.println(interruptCounter);
+      if(interruptCounter < 10){
+        currentTrack = interruptCounter;
+      }
     }
 
     interruptCounter = 0;
@@ -84,8 +87,11 @@ void listeningEnded(){
 void loop() {
 
   if(!musicPlayer.playingMusic){
-    musicPlayer.startPlayingFile("/track001.mp3");
-    currentTrack = 1;
+    String filename = "/track00";
+    filename = filename + currentTrack;
+    filename = filename + ".mp3";
+    const char* filenameC = filename.c_str();
+    musicPlayer.startPlayingFile(filenameC);
   }
 
   if(listenMode){
