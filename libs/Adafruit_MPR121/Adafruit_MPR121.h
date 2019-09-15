@@ -101,8 +101,9 @@ public:
   void setThreshholds(uint8_t touch, uint8_t release)
       __attribute__((deprecated));
   void setThresholds(uint8_t touch, uint8_t release);
-  uint16_t getTouches(void);
+  uint16_t getTouches(bool debug);
   void calibrate(void);
+  void calibrate(uint16_t index);
   void off();
   void on();
 
@@ -114,10 +115,9 @@ private:
   byte triggerThreshold = 2;
   byte updateIteration = 0;
   byte baselineIterations = 16;
-  float baseline[16][12];
-  float currentBaseline[12]; 
+  uint16_t baseline[16][12];
+  uint16_t currentBaseline[12]; 
   bool calibrationActive = true;
-
 };
 
 #endif

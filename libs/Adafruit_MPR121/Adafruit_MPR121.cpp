@@ -267,30 +267,21 @@ void Adafruit_MPR121::on(){
 }
 
 void Adafruit_MPR121::calibrate(void){
-  //Befüllt das Baseline Array mit 5 Messungen
-  // for(int i = 0; i < baselineIterations; i++){
-  //   for (int j = 0; j < 12; j++)
-  //   {
-  //     this->baseline[i][j] = filteredData(j);
-    
-  //   }
-  //   delay(5);
-  // }
-
-  //averaged die letzten 5 Messungen
   for(int i = 0; i < 12; i++)
   {
-    // this->currentBaseline[i] = 0;
-    // for(int j = 0; j < this->baselineIterations; j++)
-    // {
-    //   this->currentBaseline[i] += baseline[j][i];
-    // }
-    // this->currentBaseline[i] = this->currentBaseline[i]/this->baselineIterations;
-    this->currentBaseline[i] = filteredData(i);
+    uint16_t data = filteredData(i);
+    if(data < 1024) { //False positives vermeiden
+      this->currentBaseline[i] = data;
+    }
   }
 }
 
-uint16_t Adafruit_MPR121::getTouches(void){
+void Adafruit_MPR121::calibrate(uint16_t index){
+  this->currentBaseline[index] = filteredData(index);
+}
+
+
+uint16_t Adafruit_MPR121::getTouches(bool debug){
   uint16_t touches = 0b0000000000000000;
   uint16_t numTouches = 0;
   for(uint16_t i = 0; i < 12; i++){
@@ -299,15 +290,19 @@ uint16_t Adafruit_MPR121::getTouches(void){
       bitWrite(touches, i, 1);
       calibrationActive = false;
       numTouches++;
-    } else {
-      currentBaseline[i] = data;
     }
     
-      // Serial.print("D: "); Serial.print(filteredData(i)); Serial.print(" B: ");
-      // Serial.print(currentBaseline[i]); Serial.print(" | ");
-  }
-  // Serial.println();
+    if(data < 1024 && ( data < (currentBaseline[i] - 15) || data > currentBaseline[i]) || data + 1 == currentBaseline[i] || data - 1 == currentBaseline[i]) { //False positives vermeiden
+      currentBaseline[i] = data;
+    }
 
+  if(debug){
+    Serial.print("D: ");Serial.print(data); Serial.print(" "); Serial.print("B: ");Serial.print(currentBaseline[i]); Serial.print(" | ");
+  }
+  }
+  if(debug){
+    Serial.println();
+  }
   
   if(calibrationActive){ // || numTouches == 0
     calibrate();
